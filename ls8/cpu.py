@@ -6,11 +6,11 @@ import sys
 # Hardcoding variables for branch table
 LDI = 0b10000010
 PRN = 0b01000111
-
+MUL = 0b10100010
 HLT = 0b00000001
 
 
-
+SP = 7 # R7 Stack Pointer
 class CPU:
     """Main CPU class."""
 
@@ -25,7 +25,7 @@ class CPU:
         self.instruction = {}
         self.instruction[LDI] = self.handle_LDI
         self.instruction[PRN] = self.handle_PRN
-      
+        self.instruction[MUL] = self.handle_MUL
 
 
 # Functions for RAM read/write
@@ -43,15 +43,15 @@ class CPU:
         address = 0
         # For now, we've just hardcoded a program:
 
-        program = [
+        #program = [
              # From print8.ls8
-             0b10000010,  # LDI R0,8
-             0b00000000,
-             0b00001000,
-             0b01000111,  # PRN R0
-             0b00000000,
-             0b00000001,  # HLT
-        ]
+         #    0b10000010,  # LDI R0,8
+         #    0b00000000,
+         #    0b00001000,
+         #    0b01000111,  # PRN R0
+         #    0b00000000,
+         #    0b00000001,  # HLT
+       # ]
 
         for instruction in program:
             self.ram[address] = instruction
@@ -63,6 +63,8 @@ class CPU:
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         # elif op == "SUB": etc
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
      
         else:
             raise Exception("Unsupported ALU operation")
@@ -94,6 +96,9 @@ class CPU:
     def handle_PRN(self, operand_a, operand_b):
         print(f"Print to Console - {self.reg[operand_a]}")
         self.pc += 2
+    def handle_MUL(self, operand_a, operand_b):
+        self.alu("MUL", operand_a, operand_b)
+        self.pc += 3
 
 
     def run(self):
@@ -101,7 +106,7 @@ class CPU:
         # Perform REPL style execution
         running = True
         # Before the loop starts, initialize stack pointer
-       # self.reg[SP] = 0xF4
+        self.reg[SP] = 0xF4
         while running:
             # Start the CPU. start storing instructions in IR
             self.ir = self.ram_read(self.pc)
