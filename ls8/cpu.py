@@ -8,6 +8,8 @@ LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
 HLT = 0b00000001
+POP = 0b01000110
+PUSH = 0b01000101
 
 
 SP = 7 # R7 Stack Pointer
@@ -26,6 +28,8 @@ class CPU:
         self.instruction[LDI] = self.handle_LDI
         self.instruction[PRN] = self.handle_PRN
         self.instruction[MUL] = self.handle_MUL
+        self.instruction[POP] = self.handle_POP
+        self.instruction[PUSH] = self.handle_PUSH
 
 
 # Functions for RAM read/write
@@ -98,7 +102,19 @@ class CPU:
         self.pc += 2
     def handle_MUL(self, operand_a, operand_b):
         self.alu("MUL", operand_a, operand_b)
-        self.pc += 3
+        self.pc += 3  
+         
+    def handle_POP(self, operand_a, operand_b):
+        value = self.ram[self.reg[SP]]
+        self.reg[operand_a] = value
+        self.reg[SP] += 1
+        self.pc += 2
+
+    def handle_PUSH(self, operand_a, operand_b):
+        value = self.reg[operand_a]
+        self.reg[SP] -= 1
+        self.ram[self.reg[SP]] = value
+        self.pc += 2
 
 
     def run(self):
