@@ -99,8 +99,7 @@ class CPU:
         """
 
         print(
-            f"TRACE: %02X | %02X %02X %02X |"
-            % (
+            f"TRACE: %02X | %02X %02X %02X |" % (
                 self.pc,
                 # self.fl,
                 # self.ie,
