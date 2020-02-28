@@ -17,7 +17,9 @@ CMP = 0b10100111
 JMP = 0b01010100
 JEQ = 0b01010101
 JNE = 0b01010110
-SP = 7 # R7 Stack Pointer
+SP = 7  # R7 Stack Pointer
+
+
 class CPU:
     """Main CPU class."""
 
@@ -44,9 +46,7 @@ class CPU:
         self.instruction[JNE] = self.handle_JNE
 
 
-
 # Functions for RAM read/write
-
 
     def ram_read(self, address):
         return self.ram[address]
@@ -60,14 +60,14 @@ class CPU:
         address = 0
         # For now, we've just hardcoded a program:
 
-        #program = [
-             # From print8.ls8
-         #    0b10000010,  # LDI R0,8
-         #    0b00000000,
-         #    0b00001000,
-         #    0b01000111,  # PRN R0
-         #    0b00000000,
-         #    0b00000001,  # HLT
+        # program = [
+        # From print8.ls8
+        #    0b10000010,  # LDI R0,8
+        #    0b00000000,
+        #    0b00001000,
+        #    0b01000111,  # PRN R0
+        #    0b00000000,
+        #    0b00000001,  # HLT
        # ]
 
         for instruction in program:
@@ -91,7 +91,7 @@ class CPU:
                 self.fl = 0b00000010
             else:
                 self.fl = 0b00000000
-     
+
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -122,14 +122,15 @@ class CPU:
     def handle_PRN(self, operand_a, operand_b):
         print(f"Print to Console - {self.reg[operand_a]}")
         self.pc += 2
+
     def handle_MUL(self, operand_a, operand_b):
         self.alu("MUL", operand_a, operand_b)
-        self.pc += 3  
-    
-    def handle_ADD(self,operand_a,operand_b):
-        self.alu('ADD', operand_a,operand_b)
-        self.pc +=3
-         
+        self.pc += 3
+
+    def handle_ADD(self, operand_a, operand_b):
+        self.alu('ADD', operand_a, operand_b)
+        self.pc += 3
+
     def handle_POP(self, operand_a, operand_b):
         value = self.ram[self.reg[SP]]
         self.reg[operand_a] = value
@@ -141,19 +142,19 @@ class CPU:
         self.reg[SP] -= 1
         self.ram[self.reg[SP]] = value
         self.pc += 2
-    
-    def handle_CALL(self,operand_a,operand_b):
-        value = self.pc +2
-        self.reg[SP] -=1
+
+    def handle_CALL(self, operand_a, operand_b):
+        value = self.pc + 2
+        self.reg[SP] -= 1
         self.ram[self.reg[SP]] = value
         subroutine_address = self.reg[operand_a]
         self.pc = subroutine_address
-    
+
     def handle_RET(self, operand_a, operand_b):
         return_address = self.reg[SP]
         self.reg[SP] += 1
         self.pc = self.ram[return_address]
-        
+
     def handle_CMP(self, operand_a, operand_b):
         self.alu("CMP", operand_a, operand_b)
         self.pc += 3
@@ -172,9 +173,6 @@ class CPU:
             self.handle_JMP(operand_a, operand_b)
         else:
             self.pc += 2
-    
- 
-
 
     def run(self):
         """Run the CPU."""
@@ -188,7 +186,6 @@ class CPU:
             operand_a = self.ram_read(self.pc+1)
             operand_b = self.ram_read(self.pc+2)
 
-         
             if self.ir == HLT:
                 running = False
                 break
@@ -198,4 +195,3 @@ class CPU:
             except:
                 print(f"Error: Unknown Command {self.ir}")
                 sys.exit(1)
-
