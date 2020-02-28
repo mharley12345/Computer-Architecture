@@ -13,6 +13,10 @@ POP = 0b01000110
 PUSH = 0b01000101
 CALL = 0b01010000
 RET = 0b00010001
+CMP = 0b10100111
+JMP = 0b01010100
+JEQ = 0b01010101
+JNE = 0b01010110
 SP = 7 # R7 Stack Pointer
 class CPU:
     """Main CPU class."""
@@ -34,6 +38,11 @@ class CPU:
         self.instruction[CALL] = self.handle_CALL
         self.instruction[RET] = self.handle_RET
         self.instruction[ADD] = self.handle_ADD
+        self.instruction[CMP] = self.handle_CMP
+        self.instruction[JMP] = self.handle_JMP
+        self.instruction[JEQ] = self.handle_JEQ
+        self.instruction[JNE] = self.handle_JNE
+
 
 
 # Functions for RAM read/write
@@ -73,6 +82,15 @@ class CPU:
         # elif op == "SUB": etc
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+        elif op == "CMP":
+            if self.reg[reg_a] == self.reg[reg_b]:
+                self.fl = 0b00000001
+            elif self.reg[reg_a] < self.reg[reg_b]:
+                self.fl = 0b00000100
+            elif self.reg[reg_a] > self.reg[reg_b]:
+                self.fl = 0b00000010
+            else:
+                self.fl = 0b00000000
      
         else:
             raise Exception("Unsupported ALU operation")
@@ -135,6 +153,25 @@ class CPU:
         return_address = self.reg[SP]
         self.reg[SP] += 1
         self.pc = self.ram[return_address]
+        
+    def handle_CMP(self, operand_a, operand_b):
+        self.alu("CMP", operand_a, operand_b)
+        self.pc += 3
+
+    def handle_JMP(self, operand_a, operand_b):
+        self.pc = self.reg[operand_a]
+
+    def handle_JEQ(self, operand_a, operand_b):
+        if self.fl == 0b00000001:
+            self.handle_JMP(operand_a, operand_b)
+        else:
+            self.pc += 2
+
+    def handle_JNE(self, operand_a, operand_b):
+        if self.fl == 0b00000100:
+            self.handle_JMP(operand_a, operand_b)
+        else:
+            self.pc += 2
     
  
 
