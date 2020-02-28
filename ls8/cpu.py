@@ -1,4 +1,3 @@
-
 """CPU functionality."""
 
 import sys
@@ -45,8 +44,7 @@ class CPU:
         self.instruction[JEQ] = self.handle_JEQ
         self.instruction[JNE] = self.handle_JNE
 
-
-# Functions for RAM read/write
+    # Functions for RAM read/write
 
     def ram_read(self, address):
         return self.ram[address]
@@ -68,7 +66,7 @@ class CPU:
         #    0b01000111,  # PRN R0
         #    0b00000000,
         #    0b00000001,  # HLT
-       # ]
+        # ]
 
         for instruction in program:
             self.ram[address] = instruction
@@ -101,17 +99,21 @@ class CPU:
         from run() if you need help debugging.
         """
 
-        print(f"TRACE: %02X | %02X %02X %02X |" % (
-            self.pc,
-            # self.fl,
-            # self.ie,
-            self.ram_read(self.pc),
-            self.ram_read(self.pc + 1),
-            self.ram_read(self.pc + 2)
-        ), end='')
+        print(
+            f"TRACE: %02X | %02X %02X %02X |"
+            % (
+                self.pc,
+                # self.fl,
+                # self.ie,
+                self.ram_read(self.pc),
+                self.ram_read(self.pc + 1),
+                self.ram_read(self.pc + 2),
+            ),
+            end="",
+        )
 
         for i in range(8):
-            print(" %02X" % self.reg[i], end='')
+            print(" %02X" % self.reg[i], end="")
 
         print()
 
@@ -128,7 +130,7 @@ class CPU:
         self.pc += 3
 
     def handle_ADD(self, operand_a, operand_b):
-        self.alu('ADD', operand_a, operand_b)
+        self.alu("ADD", operand_a, operand_b)
         self.pc += 3
 
     def handle_POP(self, operand_a, operand_b):
@@ -183,8 +185,8 @@ class CPU:
         while running:
             # Start the CPU. start storing instructions in IR
             self.ir = self.ram_read(self.pc)
-            operand_a = self.ram_read(self.pc+1)
-            operand_b = self.ram_read(self.pc+2)
+            operand_a = self.ram_read(self.pc + 1)
+            operand_b = self.ram_read(self.pc + 2)
 
             if self.ir == HLT:
                 running = False
