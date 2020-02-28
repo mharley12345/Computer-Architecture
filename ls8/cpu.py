@@ -1,5 +1,4 @@
 """CPU functionality."""
-
 import sys
 
 # Hardcoding variables for branch table
